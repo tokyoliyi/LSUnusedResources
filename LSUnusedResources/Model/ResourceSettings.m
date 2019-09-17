@@ -13,6 +13,8 @@ static NSString * const kSettingsKeyExcludeFolders   = @"ExcludeFolders";
 static NSString * const kSettingsKeyResourceSuffixs  = @"ResourceSuffixs";
 static NSString * const kSettingsKeyResourcePatterns = @"ResourcePatterns";
 static NSString * const kSettingsKeyMatchSimilarName = @"MatchSimilarName";
+static NSString * const kSettingsKeyMatchCustomName = @"MatchCustomName";
+static NSString * const kSettingsKeyMatchCustomPattern = @"MatchCustomPattern";
 
 #pragma mark - ResourceSettings
 
@@ -38,6 +40,8 @@ static NSString * const kSettingsKeyMatchSimilarName = @"MatchSimilarName";
         _resourceSuffixs = [self getValueForKey:kSettingsKeyResourceSuffixs];
         _resourcePatterns = [self getValueForKey:kSettingsKeyResourcePatterns];
         _matchSimilarName = [self getValueForKey:kSettingsKeyMatchSimilarName];
+        _matchCustomName = [self getValueForKey:kSettingsKeyMatchCustomName];
+        _customPattern = [self getValueForKey:kSettingsKeyMatchCustomPattern];
     }
     return self;
 }
@@ -95,6 +99,16 @@ static NSString * const kSettingsKeyMatchSimilarName = @"MatchSimilarName";
 - (void)setMatchSimilarName:(NSNumber *)matchSimilarName {
     _matchSimilarName = matchSimilarName;
     [self setValue:matchSimilarName forKey:kSettingsKeyMatchSimilarName];
+}
+
+- (void)setMatchCustomName:(NSNumber *)matchCustomName {
+    _matchCustomName = matchCustomName;
+    [self setValue:matchCustomName forKey:kSettingsKeyMatchCustomName];
+}
+
+- (void)setCustomPattern:(NSString *)customPattern {
+    _customPattern = customPattern;
+    [self setValue:customPattern forKey:kSettingsKeyMatchCustomPattern];
 }
 
 #pragma mark - Private

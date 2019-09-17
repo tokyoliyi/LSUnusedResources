@@ -17,6 +17,8 @@
 @property (strong, nonatomic) NSArray *resourceSuffixs; /**< <NSString *> */
 @property (strong, nonatomic) NSArray *resourcePatterns; /**< <NSDictionary *> */
 @property (strong, nonatomic) NSNumber *matchSimilarName;
+@property (strong, nonatomic) NSNumber *matchCustomName;
+@property (strong, nonatomic) NSString *customPattern;
 
 + (instancetype)sharedObject;
 

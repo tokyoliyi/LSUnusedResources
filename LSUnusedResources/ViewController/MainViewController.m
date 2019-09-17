@@ -34,6 +34,8 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
 @property (weak) IBOutlet NSTableView *patternTableView;
 
 @property (weak) IBOutlet NSButton *ignoreSimilarCheckbox;
+@property (weak) IBOutlet NSButton *customMactchCheckbox;
+@property (weak) IBOutlet NSTextField *customMatchField;
 
 // Result
 @property (weak) IBOutlet NSTableView *resultsTableView;
@@ -238,6 +240,10 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
     [ResourceSettings sharedObject].matchSimilarName = sender.state == NSOnState ? @(YES) : @(NO);
 }
 
+- (IBAction)onCustomCheckboxClicked:(NSButton *)sender {
+    [ResourceSettings sharedObject].matchCustomName = sender.state == NSOnState ? @(YES) : @(NO);
+}
+
 #pragma mark - NSNotification
 
 - (void)onResourceFileQueryDone:(NSNotification *)notification {
@@ -339,6 +345,8 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
         suffixs = [suffixs stringByReplacingOccurrencesOfString:@" " withString:@""];
         suffixs = [suffixs stringByReplacingOccurrencesOfString:@"." withString:@""];
         [ResourceSettings sharedObject].resourceSuffixs = [suffixs componentsSeparatedByString:kDefaultResourceSeparator];
+    } else if (textField == self.customMatchField){
+        [ResourceSettings sharedObject].customPattern = [textField stringValue];
     }
 }
 
@@ -374,6 +382,8 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
     [_excludeFolderTextField setEnabled:state];
     
     [_ignoreSimilarCheckbox setEnabled:state];
+    [_customMactchCheckbox setEnabled:state];
+    [_customMatchField setEnabled:state];
 
     [_searchButton setEnabled:state];
     [_exportButton setHidden:!state];
@@ -397,9 +407,11 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
     NSString *tips = @"Searching...";
     if (self.isFileDone) {
         tips = [tips stringByAppendingString:[NSString stringWithFormat:@"%ld resources", [[ResourceFileSearcher sharedObject].resNameInfoDict allKeys].count]];
+        NSLog(@"[[ResourceFileSearcher sharedObject].resNameInfoDict allKeys]:%@",[[ResourceFileSearcher sharedObject].resNameInfoDict allKeys]);
     }
     if (self.isStringDone) {
         tips = [tips stringByAppendingString:[NSString stringWithFormat:@"%ld strings", [ResourceStringSearcher sharedObject].resStringSet.count]];
+        NSLog(@"[ResourceStringSearcher sharedObject].resStringSet:%@",[ResourceStringSearcher sharedObject].resStringSet);
     }
     self.statusLabel.stringValue = tips;
     
@@ -414,7 +426,11 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
                     ResourceFileInfo *resInfo = [ResourceFileSearcher sharedObject].resNameInfoDict[name];
                     if (!resInfo.isDir
                         || ![self usingResWithDiffrentDirName:resInfo]) {
-                        [self.unusedResults addObject:resInfo];
+                        
+                        if (!self.customMactchCheckbox.state
+                            ||![[ResourceStringSearcher sharedObject] containsCustomResourceName:name regexStr:[ResourceSettings sharedObject].customPattern]) {
+                            [self.unusedResults addObject:resInfo];
+                        }                       
                     }
                 }
             }
@@ -474,6 +490,18 @@ static NSString * const kResultIdentifyFilePath    = @"FilePath";
     
     NSNumber *matchSimilar = [ResourceSettings sharedObject].matchSimilarName;
     [self.ignoreSimilarCheckbox setState:matchSimilar.boolValue ? NSOnState : NSOffState];
+    
+    NSNumber *matchCustom = [ResourceSettings sharedObject].matchCustomName;
+    [self.customMactchCheckbox setState:matchCustom.boolValue ? NSOnState : NSOffState];
+    
+    
+    NSString *customPattern = @"";
+    if ([ResourceSettings sharedObject].customPattern.length) {
+        customPattern = [ResourceSettings sharedObject].customPattern;
+    }
+    [self.customMatchField setStringValue:customPattern];
+
+    
 }
 
 @end

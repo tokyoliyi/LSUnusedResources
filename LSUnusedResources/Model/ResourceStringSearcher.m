@@ -100,6 +100,27 @@ static NSString * const kPatternIdentifyGroupIndex  = @"PatternGroupIndex";
     return NO;
 }
 
+- (BOOL)containsCustomResourceName:(NSString *)name regexStr:(NSString *)regexStr {
+//    NSString *regexStr = @"(?=_nor)|(?=_press)";
+//
+    NSRegularExpression* regexExpression = [NSRegularExpression regularExpressionWithPattern:regexStr options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray* matchs = [regexExpression matchesInString:name options:0 range:NSMakeRange(0, name.length)];
+    if (matchs != nil && [matchs count] == 1) {
+        NSTextCheckingResult *checkingResult = [matchs objectAtIndex:0];
+        NSRange numberRange = [checkingResult range];
+        NSString *prefix = nil;
+        if (numberRange.location != 0){
+            prefix = [name substringToIndex:numberRange.location];
+        }
+        for (NSString *res in self.resStringSet) {
+            if ([res hasPrefix:prefix]) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (BOOL)containsSimilarResourceName:(NSString *)name {
     NSString *regexStr = @"([-_]?\\d+)";
     NSRegularExpression* regexExpression = [NSRegularExpression regularExpressionWithPattern:regexStr options:NSRegularExpressionCaseInsensitive error:nil];
@@ -107,7 +128,6 @@ static NSString * const kPatternIdentifyGroupIndex  = @"PatternGroupIndex";
     if (matchs != nil && [matchs count] == 1) {
         NSTextCheckingResult *checkingResult = [matchs objectAtIndex:0];
         NSRange numberRange = [checkingResult rangeAtIndex:1];
-        
         NSString *prefix = nil;
         NSString *suffix = nil;
         
@@ -166,7 +186,9 @@ static NSString * const kPatternIdentifyGroupIndex  = @"PatternGroupIndex";
                               cPattern,    // .cpp
                               @"img\\s+src=[\"\'](.*?)[\"\']", // .html, <img src="xx"> <img src='xx'>
                               @"[\"\']src[\"\'],\\s+[\"\'](.*?)[\"\']", // .js,  "src", "xx"> 'src', 'xx'>
-                              @":\\s*\"(.*?)\"", // .json, "xx"
+//                              @":\\s*\"(.*?)\"", // .json, "xx"
+                              @"\"(.*?)\"", // .json, "xx"
+
                               @">(.*?)<",  // .plist, "<string>xx</string>"
                               cPattern];   // .css
     

@@ -38,6 +38,7 @@ extern NSString * const kNotificationResourceStringQueryDone;
 
 - (BOOL)containsResourceName:(NSString *)name;
 
+- (BOOL)containsCustomResourceName:(NSString *)name regexStr:(NSString *)regexStr;
 /**
  *  If resource name is: "icon_tag_1.png", and using in code by "icon_tag_%d", this resource is used with a similar name.
  *
@@ -46,6 +47,7 @@ extern NSString * const kNotificationResourceStringQueryDone;
  *  @return BOOL
  */
 - (BOOL)containsSimilarResourceName:(NSString *)name;
+
 
 - (NSArray *)createDefaultResourcePatternsWithResourceSuffixs:(NSArray *)resSuffixs;
 
